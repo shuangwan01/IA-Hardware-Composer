@@ -78,6 +78,7 @@ void OverlayLayer::SetBuffer(HWCNativeHandle handle, int32_t acquire_fence,
     bool is_cursor_layer = false;
     if (layer) {
       is_cursor_layer = layer->IsCursorLayer();
+      ETRACE("is_cursor_layer %d %p \n", is_cursor_layer, layer);
     }
     buffer->InitializeFromNativeHandle(handle, resource_manager,
                                        is_cursor_layer);
@@ -86,7 +87,7 @@ void OverlayLayer::SetBuffer(HWCNativeHandle handle, int32_t acquire_fence,
     }
   }
 
-  if (register_buffer && handle->is_raw_pixel_ && !surface_damage_.empty()) {
+  if (register_buffer && handle->is_raw_pixel_) {
     buffer->UpdateRawPixelBackingStore(handle->pixel_memory_);
     state_ |= kRawPixelDataChanged;
   }
@@ -224,7 +225,7 @@ void OverlayLayer::InitializeState(HwcLayer* layer,
 
   surface_damage_ = layer->GetLayerDamage();
   SetBuffer(layer->GetNativeHandle(), layer->GetAcquireFence(),
-            resource_manager, true);
+            resource_manager, true, layer);
 
   if (!handle_constraints) {
     if (previous_layer) {
