@@ -1159,11 +1159,13 @@ static void iahwc_assign_planes(struct weston_output *output_base,
 
   wl_list_for_each_safe(ev, next, &output_base->compositor->view_list, link) {
 
-    pixman_region32_init(&surface_overlap);
-    pixman_region32_intersect(&surface_overlap, &overlap,
-                              &ev->transform.boundingbox);
+      pixman_region32_init(&surface_overlap);
+      pixman_region32_intersect(&surface_overlap, &overlap,
+				&ev->transform.boundingbox);
 
-    next_plane = NULL;
+      next_plane = NULL;
+      if (pixman_region32_not_empty(&surface_overlap))
+	      next_plane = primary;
 
     if (next_plane == NULL)
       next_plane = iahwc_output_prepare_cursor_view(output, ev);
@@ -1444,10 +1446,10 @@ static int vsync_callback(iahwc_callback_data_t data, iahwc_display_t display,
   ts.tv_nsec = timestamp;
   ts.tv_sec = timestamp / (1000 * 1000 * 1000);
 
-  if (output->pageflip_timer && output->frame_commited)
+  if (output->pageflip_timer && output->frame_commited) {
     wl_event_source_timer_update(output->pageflip_timer, 1);
-
-  //weston_output_finish_frame(&output->base, &ts, flags);
+    //weston_output_finish_frame(&output->base, &ts, flags);
+  }
 
   output->frame_commited = 0;
 
