@@ -764,37 +764,37 @@ static struct weston_plane *iahwc_output_prepare_cursor_view(
   struct wl_shm_buffer *shmbuf;
   float x, y;
   struct weston_buffer *buffer = ev->surface->buffer_ref.buffer;
-
+fprintf(stderr, "cursor \n");
   if (output->cursor_view)
     return NULL;
-
+fprintf(stderr, "cursor1 \n");
   if (ev->surface->buffer_ref.buffer == NULL)
     return NULL;
-
+fprintf(stderr, "cursor1.1 \n");
   shmbuf = wl_shm_buffer_get(ev->surface->buffer_ref.buffer->resource);
   if (!shmbuf)
     return NULL;
-
+fprintf(stderr, "cursor1.2 \n");
   if (wl_shm_buffer_get_format(shmbuf) != WL_SHM_FORMAT_ARGB8888)
     return NULL;
-
+fprintf(stderr, "cursor1.3 \n");
   if (output->base.transform != WL_OUTPUT_TRANSFORM_NORMAL)
     return NULL;
-
+fprintf(stderr, "cursor1.4 \n");
   if (ev->transform.enabled &&
       (ev->transform.matrix.type > WESTON_MATRIX_TRANSFORM_TRANSLATE))
     return NULL;
-
+fprintf(stderr, "cursor1.5 \n");
   if (viewport->buffer.scale != output->base.current_scale)
     return NULL;
-
+fprintf(stderr, "cursor1.6 \n");
   if (ev->geometry.scissor_enabled)
     return NULL;
-
+fprintf(stderr, "cursor1.7 \n");
   if (ev->surface->width > b->cursor_width ||
       ev->surface->height > b->cursor_height)
     return NULL;
-
+fprintf(stderr, "cursor2 \n");
   output->cursor_view = ev;
   weston_view_to_global_float(ev, 0, 0, &x, &y);
   output->cursor_plane.x = x;
@@ -828,7 +828,8 @@ static struct weston_plane *iahwc_output_prepare_cursor_view(
   iahwc_region_t damage_region;
   damage_region.numRects = 1;
   damage_region.rects = &source_crop;
-
+  fprintf(stderr, "2source_crop.left, source_crop.top, source_crop.right, source_crop.bottom %d %d %d %d \n", source_crop.left, source_crop.top, source_crop.right, source_crop.bottom);
+  fprintf(stderr,"2display_frame.left, display_frame.top, display_frame.right, display_frame.bottom %d %d %d %d \n", display_frame.left, display_frame.top, display_frame.right, display_frame.bottom);
   b->iahwc_layer_set_source_crop(b->iahwc_device, 0, cursor_layer_id,
                                  source_crop);
   b->iahwc_layer_set_display_frame(b->iahwc_device, 0, cursor_layer_id,
@@ -861,12 +862,15 @@ static struct weston_plane *iahwc_output_prepare_overlay_view(
   uint32_t dest_w, dest_h;
 
   uint32_t overlay_layer_id;
-
+fprintf(stderr, "iahwc_output_prepare_overlay_view \n");
   if (ev->surface->buffer_ref.buffer == NULL)
     return NULL;
-
+fprintf(stderr, "iahwc_output_prepare_overlay_view2 \n");
   buffer_resource = ev->surface->buffer_ref.buffer->resource;
   shmbuf = wl_shm_buffer_get(buffer_resource);
+  if (shmbuf) {
+      return NULL;
+  }
 
   if (!shmbuf) {
   if ((dmabuf = linux_dmabuf_buffer_get(buffer_resource))) {
@@ -992,14 +996,15 @@ static struct weston_plane *iahwc_output_prepare_overlay_view(
     b->iahwc_layer_set_bo(b->iahwc_device, 0, overlay_layer_id, bo);
   }
 
-  iahwc_rect_t source_crop = {src_x, src_y, src_w, src_h};
+  iahwc_rect_t source_crop = {0, 0, dest_w, dest_h};
 
   iahwc_rect_t display_frame = {dest_x, dest_y, dest_w, dest_h};
 
   iahwc_region_t damage_region;
   damage_region.numRects = 1;
   damage_region.rects = &source_crop;
-
+  fprintf(stderr,"source_crop.left, source_crop.top, source_crop.right, source_crop.bottom %d %d %d %d \n", source_crop.left, source_crop.top, source_crop.right, source_crop.bottom);
+  fprintf(stderr,"display_frame.left, display_frame.top, display_frame.right, display_frame.bottom %d %d %d %d \n", display_frame.left, display_frame.top, display_frame.right, display_frame.bottom);
   b->iahwc_layer_set_source_crop(b->iahwc_device, 0, overlay_layer_id,
                                  source_crop);
   b->iahwc_layer_set_display_frame(b->iahwc_device, 0, overlay_layer_id,
@@ -1164,11 +1169,13 @@ static void iahwc_assign_planes(struct weston_output *output_base,
 				&ev->transform.boundingbox);
 
       next_plane = NULL;
-      if (pixman_region32_not_empty(&surface_overlap))
-	      next_plane = primary;
+     // if (pixman_region32_not_empty(&surface_overlap))
+	//      next_plane = primary;
 
-    if (next_plane == NULL)
+    if (next_plane == NULL) {
+	fprintf(stderr, "checking cursor \n");
       next_plane = iahwc_output_prepare_cursor_view(output, ev);
+    }
 
     if (next_plane == NULL)
       next_plane = iahwc_output_prepare_overlay_view(output, ev);
