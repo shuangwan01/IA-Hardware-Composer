@@ -455,17 +455,9 @@ static int iahwc_output_repaint(struct weston_output *output_base,
     output->release_fence = 0;
   }
 
-  wl_list_for_each(p, &output->overlay_list_shm, link) {
-      wl_shm_buffer_begin_access(p->shm_memory);
-  }
-
 
   backend->iahwc_present_display(backend->iahwc_device, 0, &output->release_fence);
   output->frame_commited = 1;
-
-  wl_list_for_each(p, &output->overlay_list_shm, link) {
-      wl_shm_buffer_end_access(p->shm_memory);
-  }
 
   output->fb_last = output->fb_current;
   output->fb_current = output->fb_pending;
@@ -824,9 +816,10 @@ static struct weston_plane *iahwc_output_prepare_cursor_view(
   dbo.stride = wl_shm_buffer_get_stride(buffer->shm_buffer);
   dbo.format = DRM_FORMAT_ARGB8888;
   dbo.buffer = wl_shm_buffer_get_data(buffer->shm_buffer);
-
+  wl_shm_buffer_begin_access(buffer->shm_buffer);
   b->iahwc_layer_set_raw_pixel_data(b->iahwc_device, 0, cursor_layer_id,
                                     dbo);
+    wl_shm_buffer_end_access(buffer->shm_buffer);
 
   iahwc_rect_t source_crop = {0, 0, surfwidth, surfheight};
 
@@ -993,8 +986,10 @@ static struct weston_plane *iahwc_output_prepare_overlay_view(
       dbo.stride = wl_shm_buffer_get_stride(shmbuf);
       dbo.format = wl_shm_buffer_get_format(shmbuf);
       dbo.buffer = wl_shm_buffer_get_data(shmbuf);
+	    wl_shm_buffer_begin_access(shmbuf);
       b->iahwc_layer_set_raw_pixel_data(b->iahwc_device, 0, overlay_layer_id,
 					dbo);
+	wl_shm_buffer_end_access(shmbuf);
   } else {
     iahwc_add_overlay_info(output, 0, bo, overlay_layer_id);
     b->iahwc_layer_set_bo(b->iahwc_device, 0, overlay_layer_id, bo);
