@@ -57,8 +57,8 @@ void PixelBuffer::Initialize(const NativeBufferHandler *buffer_handler,
 
   for (i = 0; i < height; i++)
     memcpy(ptr + i * handle->meta_data_.pitches_[0],
-           byteaddr + i * stride,
-           stride);
+	   byteaddr + i * stride,
+	   stride);
 
   Unmap(handle->meta_data_.prime_fd_, ptr, size);
   needs_texture_upload_ = false;
@@ -72,6 +72,8 @@ void PixelBuffer::Refresh(void *addr, const ResourceHandle &resource) {
   if (!ptr) {
     return;
   }
+
+    uint8_t* byteaddr = (uint8_t*) addr;
 
   memcpy(ptr, addr, size);
   Unmap(handle->meta_data_.prime_fd_, ptr, size);
