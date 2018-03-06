@@ -48,7 +48,7 @@ void PixelBuffer::Initialize(const NativeBufferHandler *buffer_handler,
     ETRACE("PixelBuffer: prime_fd_ is invalid.");
     return;
   }
-
+return;
   size_t size = handle->meta_data_.height_ * handle->meta_data_.pitches_[0];
   uint8_t *ptr = (uint8_t *) Map(handle->meta_data_.prime_fd_, size);
   if (!ptr) {
@@ -67,6 +67,7 @@ void PixelBuffer::Initialize(const NativeBufferHandler *buffer_handler,
 
 void PixelBuffer::Refresh(void *addr, const ResourceHandle &resource) {
   needs_texture_upload_ = true;
+  return;
 
   const HWCNativeHandle &handle = resource.handle_;
   size_t size = handle->meta_data_.height_ * handle->meta_data_.pitches_[0];
