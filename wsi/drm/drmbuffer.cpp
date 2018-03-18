@@ -31,6 +31,22 @@
 
 #include <va/va_drmcommon.h>
 
+#ifndef EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT
+#define EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT 0x3443
+#endif
+
+#ifndef EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT
+#define EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT 0x3444
+#endif
+
+#ifndef EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT
+#define EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT 0x3445
+#endif
+
+#ifndef EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT
+#define EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT 0x3446
+#endif
+
 namespace hwcomposer {
 
 DrmBuffer::~DrmBuffer() {
@@ -187,6 +203,43 @@ const ResourceHandle& DrmBuffer::GetGpuResource(GpuDisplay egl_display,
             egl_display, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
             static_cast<EGLClientBuffer>(nullptr), attr_list_yv12);
       }
+    } else if (modifier_ && total_planes == 2) {
+      uint64_t modifier = modifier_;
+      EGLint modifier_low = static_cast<EGLint>(modifier);
+      EGLint modifier_high = static_cast<EGLint>(modifier >> 32);
+      const EGLint image_attrs[] = {
+          EGL_WIDTH,
+          static_cast<EGLint>(width_),
+          EGL_HEIGHT,
+          static_cast<EGLint>(height_),
+          EGL_LINUX_DRM_FOURCC_EXT,
+          static_cast<EGLint>(format_),
+          EGL_DMA_BUF_PLANE0_FD_EXT,
+          static_cast<EGLint>(image_.handle_->meta_data_.prime_fds_[0]),
+          EGL_DMA_BUF_PLANE0_PITCH_EXT,
+          static_cast<EGLint>(pitches_[0]),
+          EGL_DMA_BUF_PLANE0_OFFSET_EXT,
+          static_cast<EGLint>(offsets_[0]),
+          EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
+          modifier_low,
+          EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
+          modifier_high,
+          EGL_DMA_BUF_PLANE1_FD_EXT,
+          static_cast<EGLint>(image_.handle_->meta_data_.prime_fds_[1]),
+          EGL_DMA_BUF_PLANE1_PITCH_EXT,
+          static_cast<EGLint>(pitches_[1]),
+          EGL_DMA_BUF_PLANE1_OFFSET_EXT,
+          static_cast<EGLint>(offsets_[1]),
+          EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
+          modifier_low,
+          EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT,
+          modifier_high,
+          EGL_NONE,
+      };
+
+      image =
+          eglCreateImageKHR(egl_display, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
+                            static_cast<EGLClientBuffer>(nullptr), image_attrs);
     } else {
       const EGLint attr_list[] = {
           EGL_WIDTH,
@@ -360,11 +413,22 @@ bool DrmBuffer::CreateFrameBuffer(uint32_t gpu_fd) {
   image_.drm_fd_ = 0;
   media_image_.drm_fd_ = 0;
 
-  int ret = drmModeAddFB2(gpu_fd, width_, height_, frame_buffer_format_,
-                          gem_handles_, pitches_, offsets_, &image_.drm_fd_, 0);
+  int ret = 0;
+  if (modifier_) {
+    uint64_t modifiers[4];
+    modifiers[1] = modifiers[0] = modifier_;
+    modifiers[2] = modifiers[3] = DRM_FORMAT_MOD_NONE;
+    ret = drmModeAddFB2WithModifiers(
+        gpu_fd, width_, height_, frame_buffer_format_, gem_handles_, pitches_,
+        offsets_, modifiers, &image_.drm_fd_, DRM_MODE_FB_MODIFIERS);
+  } else {
+    ret = drmModeAddFB2(gpu_fd, width_, height_, frame_buffer_format_,
+                        gem_handles_, pitches_, offsets_, &image_.drm_fd_, 0);
+  }
 
   if (ret) {
-    ETRACE("drmModeAddFB2 error (%dx%d, %c%c%c%c, handle %d pitch %d) (%s)",
+    ETRACE("%s error (%dx%d, %c%c%c%c, handle %d pitch %d) (%s)",
+           (modifier_ == 0) ? "drmModeAddFB2" : "drmModeAddFB2WithModifiers",
            width_, height_, frame_buffer_format_, frame_buffer_format_ >> 8,
            frame_buffer_format_ >> 16, frame_buffer_format_ >> 24,
            gem_handles_[0], pitches_[0], strerror(-ret));
