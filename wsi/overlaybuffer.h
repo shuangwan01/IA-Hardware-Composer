@@ -93,6 +93,10 @@ class OverlayBuffer {
 
   virtual bool CreateFrameBuffer(uint32_t gpu_fd) = 0;
 
+  // Creates Framebuffer taking into account any Modifiers.
+  virtual bool CreateFrameBufferWithModifier(uint32_t gpu_fd,
+                                             uint64_t modifier) = 0;
+
   virtual void Dump() = 0;
 };
 

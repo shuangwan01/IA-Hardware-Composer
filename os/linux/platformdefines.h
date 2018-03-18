@@ -54,7 +54,6 @@ struct gbm_handle {
   bool is_raw_pixel_ = false;
   void* pixel_memory_ = NULL;
   uint32_t gbm_flags = 0;
-  uint64_t modifier = 0;
 };
 
 typedef struct gbm_handle* HWCNativeHandle;

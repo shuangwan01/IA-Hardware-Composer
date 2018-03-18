@@ -42,9 +42,15 @@ NativeSurface::~NativeSurface() {
 }
 
 bool NativeSurface::Init(ResourceManager *resource_manager, uint32_t format,
-                         uint32_t usage) {
+                         uint32_t usage, uint64_t modifier, uint32_t gpu_fd,
+                         bool *modifer_succeeded) {
+  modifier_ = modifier;
+  if (usage == hwcomposer::kLayerVideo) {
+    modifier_ = 0;
+  }
+
   resource_manager->GetNativeBufferHandler()->CreateBuffer(
-      width_, height_, format, &native_handle_, usage);
+      width_, height_, format, &native_handle_, usage, modifier_);
   if (!native_handle_) {
     ETRACE("NativeSurface: Failed to create buffer.");
     return false;
@@ -52,6 +58,31 @@ bool NativeSurface::Init(ResourceManager *resource_manager, uint32_t format,
 
   resource_manager_ = resource_manager;
   InitializeLayer(native_handle_);
+
+  if (modifier_ > 0) {
+    // Remove modifier, incase we tried modifier and FB creation failed.
+    if (!layer_.GetBuffer()->CreateFrameBufferWithModifier(gpu_fd, modifier_)) {
+      ETRACE("FB Creation failed with Modifier, Removing modifier usage.");
+      *modifer_succeeded = false;
+      ResourceHandle temp;
+      temp.handle_ = native_handle_;
+      resource_manager_->MarkResourceForDeletion(temp, false);
+
+      HWCNativeHandle native_handle;
+      resource_manager->GetNativeBufferHandler()->CreateBuffer(
+          width_, height_, format, &native_handle, usage, 0);
+      if (!native_handle_) {
+        ETRACE("NativeSurface: Failed to create buffer.");
+        return false;
+      }
+
+      native_handle_ = native_handle;
+      InitializeLayer(native_handle_);
+    } else {
+      *modifer_succeeded = true;
+    }
+  }
+
   return true;
 }
 

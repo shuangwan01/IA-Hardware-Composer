@@ -721,10 +721,12 @@ void DisplayPlaneManager::EnsureOffScreenTarget(DisplayPlaneState &plane) {
     preferred_format = plane.GetDisplayPlane()->GetPreferredFormat();
   }
 
+  uint64_t modifier = plane.GetDisplayPlane()->GetPreferredFormatModifier();
   for (auto &fb : surfaces_) {
     if (fb->GetSurfaceAge() == -1) {
       uint32_t surface_format = fb->GetLayer()->GetBuffer()->GetFormat();
-      if (preferred_format == surface_format) {
+      if ((preferred_format == surface_format) &&
+          (fb->GetModifier() == modifier)) {
         surface = fb.get();
         break;
       }
@@ -740,7 +742,16 @@ void DisplayPlaneManager::EnsureOffScreenTarget(DisplayPlaneState &plane) {
       new_surface = Create3DBuffer(width_, height_);
     }
 
-    new_surface->Init(resource_manager_, preferred_format, usage);
+    bool modifer_succeeded = false;
+    new_surface->Init(resource_manager_, preferred_format, usage, modifier,
+                      gpu_fd_, &modifer_succeeded);
+
+    if (modifer_succeeded) {
+      plane.GetDisplayPlane()->PreferredFormatModifierValidated();
+    } else {
+      plane.GetDisplayPlane()->BlackListPreferredFormatModifier();
+    }
+
     surfaces_.emplace_back(std::move(new_surface));
     surface = surfaces_.back().get();
   }

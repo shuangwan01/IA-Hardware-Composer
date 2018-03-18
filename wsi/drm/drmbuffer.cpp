@@ -99,9 +99,10 @@ void DrmBuffer::InitializeFromNativeHandle(HWCNativeHandle handle,
     data_ = handle->pixel_memory_;
     PixelBuffer* buffer = PixelBuffer::CreatePixelBuffer();
     pixel_buffer_.reset(buffer);
-    pixel_buffer_->Initialize(handler, handle->meta_data_.width_,
-                              handle->meta_data_.height_, handle->meta_data_.pitches_[0],
-                              handle->meta_data_.format_, data_, image_, is_cursor_buffer);
+    pixel_buffer_->Initialize(
+        handler, handle->meta_data_.width_, handle->meta_data_.height_,
+        handle->meta_data_.pitches_[0], handle->meta_data_.format_, data_,
+        image_, is_cursor_buffer);
     if (is_cursor_buffer) {
       image_.handle_->meta_data_.usage_ = hwcomposer::kLayerCursor;
     }
@@ -203,10 +204,12 @@ const ResourceHandle& DrmBuffer::GetGpuResource(GpuDisplay egl_display,
             egl_display, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
             static_cast<EGLClientBuffer>(nullptr), attr_list_yv12);
       }
-    } else if (modifier_ && total_planes == 2) {
-      uint64_t modifier = modifier_;
-      EGLint modifier_low = static_cast<EGLint>(modifier);
-      EGLint modifier_high = static_cast<EGLint>(modifier >> 32);
+    } else if (image_.handle_->meta_data_.fb_modifiers_[0] > 0 &&
+               total_planes == 2) {
+      EGLint modifier_low =
+          static_cast<EGLint>(image_.handle_->meta_data_.fb_modifiers_[1]);
+      EGLint modifier_high =
+          static_cast<EGLint>(image_.handle_->meta_data_.fb_modifiers_[0]);
       const EGLint image_attrs[] = {
           EGL_WIDTH,
           static_cast<EGLint>(width_),
@@ -413,11 +416,50 @@ bool DrmBuffer::CreateFrameBuffer(uint32_t gpu_fd) {
   image_.drm_fd_ = 0;
   media_image_.drm_fd_ = 0;
 
+  int ret = drmModeAddFB2(gpu_fd, width_, height_, frame_buffer_format_,
+                          gem_handles_, pitches_, offsets_, &image_.drm_fd_, 0);
+
+  if (ret) {
+    ETRACE("%s error (%dx%d, %c%c%c%c, handle %d pitch %d) (%s)",
+           "drmModeAddFB2", width_, height_, frame_buffer_format_,
+           frame_buffer_format_ >> 8, frame_buffer_format_ >> 16,
+           frame_buffer_format_ >> 24, gem_handles_[0], pitches_[0],
+           strerror(-ret));
+
+    image_.drm_fd_ = 0;
+    return false;
+  }
+
+  media_image_.drm_fd_ = image_.drm_fd_;
+  return true;
+}
+
+bool DrmBuffer::CreateFrameBufferWithModifier(uint32_t gpu_fd,
+                                              uint64_t modifier) {
+  if (image_.drm_fd_) {
+    return true;
+  }
+
+  image_.drm_fd_ = 0;
+  media_image_.drm_fd_ = 0;
+  uint32_t mostSignificantWord = image_.handle_->meta_data_.fb_modifiers_[0];
+
   int ret = 0;
-  if (modifier_) {
+  if (mostSignificantWord > 0) {
+    uint32_t total_planes = image_.handle_->meta_data_.num_planes_;
     uint64_t modifiers[4];
-    modifiers[1] = modifiers[0] = modifier_;
-    modifiers[2] = modifiers[3] = DRM_FORMAT_MOD_NONE;
+    for (uint32_t i = 0; i < total_planes; i++) {
+      // FIXME: We should be able to construct this.
+      // modifiers[i] = ((uint64_t)image_.handle_->meta_data_.fb_modifiers_[2 *
+      // i] << 32) | ((uint64_t)image_.handle_->meta_data_.fb_modifiers_[(2 *
+      // i)+1]);
+      modifiers[i] = modifier;
+    }
+
+    for (uint32_t i = total_planes; i < 4; i++) {
+      modifiers[i] = DRM_FORMAT_MOD_NONE;
+    }
+
     ret = drmModeAddFB2WithModifiers(
         gpu_fd, width_, height_, frame_buffer_format_, gem_handles_, pitches_,
         offsets_, modifiers, &image_.drm_fd_, DRM_MODE_FB_MODIFIERS);
@@ -428,7 +470,8 @@ bool DrmBuffer::CreateFrameBuffer(uint32_t gpu_fd) {
 
   if (ret) {
     ETRACE("%s error (%dx%d, %c%c%c%c, handle %d pitch %d) (%s)",
-           (modifier_ == 0) ? "drmModeAddFB2" : "drmModeAddFB2WithModifiers",
+           (mostSignificantWord == 0) ? "drmModeAddFB2"
+                                      : "drmModeAddFB2WithModifiers",
            width_, height_, frame_buffer_format_, frame_buffer_format_ >> 8,
            frame_buffer_format_ >> 16, frame_buffer_format_ >> 24,
            gem_handles_[0], pitches_[0], strerror(-ret));

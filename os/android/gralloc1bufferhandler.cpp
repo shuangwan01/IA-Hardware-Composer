@@ -111,7 +111,8 @@ bool Gralloc1BufferHandler::Init() {
 
 bool Gralloc1BufferHandler::CreateBuffer(uint32_t w, uint32_t h, int format,
                                          HWCNativeHandle *handle,
-                                         uint32_t layer_type) const {
+                                         uint32_t layer_type,
+                                         int64_t preferred_modifier) const {
   struct gralloc_handle *temp = new struct gralloc_handle();
   gralloc1_device_t *gralloc1_dvc =
       reinterpret_cast<gralloc1_device_t *>(device_);
@@ -129,17 +130,16 @@ bool Gralloc1BufferHandler::CreateBuffer(uint32_t w, uint32_t h, int format,
   }
 
   set_format_(gralloc1_dvc, temp->gralloc1_buffer_descriptor_t_, pixel_format);
+  if (set_modifier_) {
+    uint64_t modifier = 0;
+    if (preferred_modifier != -1) {
+      modifier = preferred_modifier;
+    } else {
+      modifier = drm_get_modifier(format);
+    }
 
-#ifdef ENABLE_RBC
-  // These formats are RBC supported in i915 driver
-  if ((format == DRM_FORMAT_XRGB8888) || (format == DRM_FORMAT_XBGR8888) ||
-      (format == DRM_FORMAT_ARGB8888) || (format == DRM_FORMAT_ABGR8888)) {
-#ifdef USE_GRALLOC1
-    uint64_t modifier = I915_FORMAT_MOD_Y_TILED_CCS;
     set_modifier_(gralloc1_dvc, temp->gralloc1_buffer_descriptor_t_, modifier);
-#endif
   }
-#endif
 
   if ((layer_type == hwcomposer::kLayerVideo) &&
       !IsSupportedMediaFormat(format)) {
