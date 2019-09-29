@@ -83,6 +83,10 @@ class VirtualDisplay : public NativeDisplay {
   void GetDisplayCapabilities(uint32_t *numCapabilities,
                               uint32_t *capabilities) override;
 
+  bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                          float *outMaxLuminance, float *outMaxAverageLuminance,
+                          float *outMinLuminance) override;
+
   int GetDisplayPipe() override;
 
   bool SetPowerMode(uint32_t power_mode) override;

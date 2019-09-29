@@ -502,6 +502,14 @@ bool VirtualPanoramaDisplay::GetDisplayAttribute(uint32_t /*config*/,
   return true;
 }
 
+bool VirtualPanoramaDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
+                                                int32_t *outTypes,
+                                                float *outMaxLuminance,
+                                                float *outMaxAverageLuminance,
+                                                float *outMinLuminance) {
+  return true;
+}
+
 bool VirtualPanoramaDisplay::GetDisplayConfigs(uint32_t *num_configs,
                                                uint32_t *configs) {
   if (!num_configs)

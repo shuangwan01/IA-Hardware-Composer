@@ -249,4 +249,12 @@ void LogicalDisplay::GetDisplayCapabilities(uint32_t *numCapabilities,
   physical_display_->GetDisplayCapabilities(numCapabilities, capabilities);
 }
 
+bool LogicalDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
+                                        int32_t *outTypes,
+                                        float *outMaxLuminance,
+                                        float *outMaxAverageLuminance,
+                                        float *outMinLuminance) {
+  return true;
+}
+
 }  // namespace hwcomposer
