@@ -110,6 +110,7 @@ class MosaicDisplay : public NativeDisplay {
   bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
                           float *outMaxLuminance, float *outMaxAverageLuminance,
                           float *outMinLuminance) override;
+  bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
 
   uint32_t GetXTranslation() override {
     return 0;

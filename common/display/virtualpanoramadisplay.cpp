@@ -510,6 +510,11 @@ bool VirtualPanoramaDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
   return true;
 }
 
+bool VirtualPanoramaDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                                     int32_t *outKeys) {
+  return true;
+}
+
 bool VirtualPanoramaDisplay::GetDisplayConfigs(uint32_t *num_configs,
                                                uint32_t *configs) {
   if (!num_configs)

@@ -707,6 +707,16 @@ bool DrmDisplay::GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
   return true;
 }
 
+bool DrmDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                         int32_t *outKeys) {
+  *outNumKeys = KEY_NUM_PER_FRAME_METADATA_KEYS;
+
+  for (int i = 0; i < KEY_NUM_PER_FRAME_METADATA_KEYS; i++) {
+    *(outKeys + i) = i;
+  }
+  return true;
+}
+
 void DrmDisplay::UpdateDisplayConfig() {
   // update the activeConfig
   SPIN_LOCK(display_lock_);

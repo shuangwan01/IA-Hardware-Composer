@@ -520,6 +520,11 @@ bool VirtualDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
   return true;
 }
 
+bool VirtualDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                             int32_t *outKeys) {
+  return true;
+}
+
 int VirtualDisplay::GetDisplayPipe() {
   return -1;
 }

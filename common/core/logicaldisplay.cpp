@@ -257,4 +257,9 @@ bool LogicalDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
   return true;
 }
 
+bool LogicalDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                             int32_t *outKeys) {
+  return true;
+}
+
 }  // namespace hwcomposer

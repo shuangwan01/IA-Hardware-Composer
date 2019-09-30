@@ -54,7 +54,7 @@ enum hdr_per_frame_metadata_keys {
   KEY_MIN_LUMINANCE,
   KEY_MAX_CONTENT_LIGHT_LEVEL,
   KEY_MAX_FRAME_AVERAGE_LIGHT_LEVEL,
-  KEY_HDR10_PLUS_SEI
+  KEY_NUM_PER_FRAME_METADATA_KEYS
 };
 
 struct hdr_metadata_dynamic {

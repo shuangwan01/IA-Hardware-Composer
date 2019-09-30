@@ -648,6 +648,22 @@ HWC2::Error IAHWC2::HwcDisplay::GetHdrCapabilities(uint32_t *num_types,
   }
 }
 
+HWC2::Error IAHWC2::HwcDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                                        int32_t *outKeys) {
+  supported(__func__);
+
+  if (NULL == outNumKeys || NULL == outKeys) {
+    return HWC2::Error::BadParameter;
+  }
+
+  *outNumKeys = 0;
+  if (display_->GetPerFrameMetadataKeys(outNumKeys, outKeys)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::Unsupported;
+  }
+}
+
 HWC2::Error IAHWC2::HwcDisplay::GetReleaseFences(uint32_t *num_elements,
                                                  hwc2_layer_t *layers,
                                                  int32_t *fences) {
@@ -1427,6 +1443,11 @@ hwc2_function_pointer_t IAHWC2::HookDevGetFunction(struct hwc2_device * /*dev*/,
           DisplayHook<decltype(&HwcDisplay::GetHdrCapabilities),
                       &HwcDisplay::GetHdrCapabilities, uint32_t *, int32_t *,
                       float *, float *, float *>);
+    case HWC2::FunctionDescriptor::GetPerFrameMetadataKeys:
+      return ToHook<HWC2_PFN_GET_PER_FRAME_METADATA_KEYS>(
+          DisplayHook<decltype(&HwcDisplay::GetPerFrameMetadataKeys),
+                      &HwcDisplay::GetPerFrameMetadataKeys, uint32_t *,
+                      int32_t *>);
     case HWC2::FunctionDescriptor::GetReleaseFences:
       return ToHook<HWC2_PFN_GET_RELEASE_FENCES>(
           DisplayHook<decltype(&HwcDisplay::GetReleaseFences),
