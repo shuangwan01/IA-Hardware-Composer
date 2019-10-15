@@ -937,13 +937,8 @@ HWC2::Error IAHWC2::HwcDisplay::SetColorTransform(const float *matrix,
   supported(__func__);
   // TODO: Force client composition if we get this
 
-  if (hint != HAL_COLOR_TRANSFORM_IDENTITY &&
-      hint != HAL_COLOR_TRANSFORM_ARBITRARY_MATRIX &&
-      hint != HAL_COLOR_TRANSFORM_VALUE_INVERSE &&
-      hint != HAL_COLOR_TRANSFORM_GRAYSCALE &&
-      hint != HAL_COLOR_TRANSFORM_CORRECT_PROTANOPIA &&
-      hint != HAL_COLOR_TRANSFORM_CORRECT_DEUTERANOPIA &&
-      hint != HAL_COLOR_TRANSFORM_CORRECT_TRITANOPIA)
+  if (!matrix || (hint < HAL_COLOR_TRANSFORM_IDENTITY ||
+       hint > HAL_COLOR_TRANSFORM_CORRECT_TRITANOPIA))
     return HWC2::Error::BadParameter;
 
   display_->SetColorTransform(matrix, (HWCColorTransform)hint);
@@ -1354,7 +1349,12 @@ HWC2::Error IAHWC2::Hwc2Layer::SetLayerZOrder(uint32_t order) {
 
 HWC2::Error IAHWC2::Hwc2Layer::SetLayerColorTransform(const float *matrix) {
   unsupported(__func__);
-  return HWC2::Error::None;
+
+  if (hwc_layer_.SetLayerColorTransform(matrix)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::Unsupported;
+  }
 }
 
 HWC2::Error IAHWC2::Hwc2Layer::SetLayerPerFrameMetadataBlobs(
