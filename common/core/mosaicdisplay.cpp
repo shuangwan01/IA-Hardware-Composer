@@ -645,6 +645,11 @@ bool MosaicDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   return true;
 }
 
+bool MosaicDisplay::GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                                     int32_t *outIntents) {
+  return true;
+}
+
 void MosaicDisplay::SetHDCPState(HWCContentProtection state,
                                  HWCContentType content_type) {
   uint32_t size = physical_displays_.size();

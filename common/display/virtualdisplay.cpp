@@ -525,6 +525,11 @@ bool VirtualDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   return true;
 }
 
+bool VirtualDisplay::GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                                      int32_t *outIntents) {
+  return true;
+}
+
 int VirtualDisplay::GetDisplayPipe() {
   return -1;
 }

@@ -27,6 +27,7 @@
 #include <hwctrace.h>
 #include <hwcutils.h>
 
+#include <system/graphics.h>
 #include <algorithm>
 #include <sstream>
 #include <string>
@@ -714,6 +715,19 @@ bool DrmDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   for (int i = 0; i < KEY_NUM_PER_FRAME_METADATA_KEYS; i++) {
     *(outKeys + i) = i;
   }
+  return true;
+}
+
+bool DrmDisplay::GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                                  int32_t *outIntents) {
+  // If HDR is supported, adds HDR render intents accordingly.
+  if (display_hdrMd && display_hdrMd->eotf & 0x0C) {
+    *(outIntents + *outNumIntents) = HAL_RENDER_INTENT_TONE_MAP_COLORIMETRIC;
+    *(outNumIntents)++;
+    *(outIntents + *outNumIntents) = HAL_RENDER_INTENT_TONE_MAP_ENHANCE;
+    *(outNumIntents)++;
+  }
+
   return true;
 }
 

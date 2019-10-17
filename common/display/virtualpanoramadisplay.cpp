@@ -515,6 +515,12 @@ bool VirtualPanoramaDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   return true;
 }
 
+bool VirtualPanoramaDisplay::GetRenderIntents(int32_t mode,
+                                              uint32_t *outNumIntents,
+                                              int32_t *outIntents) {
+  return true;
+}
+
 bool VirtualPanoramaDisplay::GetDisplayConfigs(uint32_t *num_configs,
                                                uint32_t *configs) {
   if (!num_configs)

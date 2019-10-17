@@ -664,6 +664,28 @@ HWC2::Error IAHWC2::HwcDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   }
 }
 
+HWC2::Error IAHWC2::HwcDisplay::GetRenderIntents(int32_t mode,
+                                                 uint32_t *outNumIntents,
+                                                 int32_t *outIntents) {
+  supported(__func__);
+
+  if (NULL == outNumIntents || NULL == outIntents) {
+    ALOGE("Null pointer error, outNumIntents: %p, outIntents: %p",
+          outNumIntents, outIntents);
+    return HWC2::Error::BadParameter;
+  }
+
+  // Add the SDR render intents by default.
+  *outNumIntents = 2;
+  *(outIntents) = HAL_RENDER_INTENT_COLORIMETRIC;
+  *(outIntents + 1) = HAL_RENDER_INTENT_ENHANCE;
+  if (display_->GetRenderIntents(mode, outNumIntents, outIntents)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::BadParameter;
+  }
+}
+
 HWC2::Error IAHWC2::HwcDisplay::GetReleaseFences(uint32_t *num_elements,
                                                  hwc2_layer_t *layers,
                                                  int32_t *fences) {
@@ -1447,6 +1469,11 @@ hwc2_function_pointer_t IAHWC2::HookDevGetFunction(struct hwc2_device * /*dev*/,
       return ToHook<HWC2_PFN_GET_PER_FRAME_METADATA_KEYS>(
           DisplayHook<decltype(&HwcDisplay::GetPerFrameMetadataKeys),
                       &HwcDisplay::GetPerFrameMetadataKeys, uint32_t *,
+                      int32_t *>);
+    case HWC2::FunctionDescriptor::GetRenderIntents:
+      return ToHook<HWC2_PFN_GET_RENDER_INTENTS>(
+          DisplayHook<decltype(&HwcDisplay::GetRenderIntents),
+                      &HwcDisplay::GetRenderIntents, int32_t, uint32_t *,
                       int32_t *>);
     case HWC2::FunctionDescriptor::GetReleaseFences:
       return ToHook<HWC2_PFN_GET_RELEASE_FENCES>(
