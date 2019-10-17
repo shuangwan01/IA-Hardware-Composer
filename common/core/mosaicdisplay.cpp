@@ -640,6 +640,14 @@ bool MosaicDisplay::GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
   return true;
 }
 
+bool MosaicDisplay::SetColorMode(int32_t mode) {
+  return true;
+}
+
+bool MosaicDisplay::GetColorModes(uint32_t *num_modes, int32_t *modes) {
+  return true;
+}
+
 bool MosaicDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
                                             int32_t *outKeys) {
   return true;

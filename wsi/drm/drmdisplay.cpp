@@ -1310,6 +1310,29 @@ float DrmDisplay::TransformGamma(float value, float gamma) const {
   return result;
 }
 
+bool DrmDisplay::SetColorMode(int32_t mode) {
+  auto it =
+      std::find(current_color_mode_.begin(), current_color_mode_.end(), mode);
+  if (it == current_color_mode_.end()) {
+    current_color_mode_.push_back(mode);
+  }
+  return true;
+}
+
+bool DrmDisplay::GetColorModes(uint32_t *num_modes, int32_t *modes) {
+  if (!modes) {
+    *num_modes = current_color_mode_.size();
+    return true;
+  }
+
+  *num_modes = current_color_mode_.size();
+  for (int i = 0; i < current_color_mode_.size(); i++) {
+    *(modes + i) == current_color_mode_[i];
+  }
+
+  return true;
+}
+
 void DrmDisplay::SetColorTransformMatrix(
     const float *color_transform_matrix,
     HWCColorTransform color_transform_hint) const {

@@ -95,6 +95,8 @@ class VirtualPanoramaDisplay : public NativeDisplay {
                         int32_t *outIntents) override;
 
   bool SetPowerMode(uint32_t power_mode) override;
+  bool SetColorMode(int32_t mode) override;
+  bool GetColorModes(uint32_t *num_modes, int32_t *modes) override;
 
 #ifdef HYPER_DMABUF_SHARING
   bool SetHyperDmaBufMode(uint32_t mode);

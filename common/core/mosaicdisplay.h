@@ -115,6 +115,10 @@ class MosaicDisplay : public NativeDisplay {
   bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
                         int32_t *outIntents) override;
 
+  bool SetColorMode(int32_t mode) override;
+
+  bool GetColorModes(uint32_t *num_modes, int32_t *modes) override;
+
   uint32_t GetXTranslation() override {
     return 0;
   }

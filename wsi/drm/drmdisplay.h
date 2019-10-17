@@ -171,6 +171,8 @@ class DrmDisplay : public PhysicalDisplay {
   void SetPipeCanvasColor(uint16_t bpc, uint16_t red, uint16_t green,
                           uint16_t blue, uint16_t alpha) const override;
   bool SetPipeMaxBpc(uint16_t max_bpc) const override;
+  bool SetColorMode(int32_t mode) override;
+  bool GetColorModes(uint32_t *num_modes, int32_t *modes) override;
   void SetColorTransformMatrix(
       const float *color_transform_matrix,
       HWCColorTransform color_transform_hint) const override;
@@ -306,6 +308,7 @@ class DrmDisplay : public PhysicalDisplay {
   uint32_t prefer_display_mode_ = 0;
   uint32_t perf_display_mode_ = 0;
   std::string display_name_;
+  std::vector<int32_t> current_color_mode_ = {HAL_COLOR_MODE_NATIVE};
 
   /* Display's static HDR metadata */
   struct drm_edid_hdr_metadata_static *display_hdrMd;
