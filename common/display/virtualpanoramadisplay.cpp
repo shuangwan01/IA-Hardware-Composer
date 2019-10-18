@@ -521,6 +521,15 @@ bool VirtualPanoramaDisplay::GetRenderIntents(int32_t mode,
   return true;
 }
 
+bool VirtualPanoramaDisplay::SetColorMode(int32_t mode) {
+  return true;
+}
+
+bool VirtualPanoramaDisplay::GetColorModes(uint32_t *num_modes,
+                                           int32_t *modes) {
+  return true;
+}
+
 bool VirtualPanoramaDisplay::GetDisplayConfigs(uint32_t *num_configs,
                                                uint32_t *configs) {
   if (!num_configs)

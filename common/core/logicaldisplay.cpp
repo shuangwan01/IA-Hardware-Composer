@@ -267,4 +267,12 @@ bool LogicalDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
   return true;
 }
 
+bool LogicalDisplay::SetColorMode(int32_t mode) {
+  return true;
+}
+
+bool LogicalDisplay::GetColorModes(uint32_t *num_modes, int32_t *modes) {
+  return true;
+}
+
 }  // namespace hwcomposer

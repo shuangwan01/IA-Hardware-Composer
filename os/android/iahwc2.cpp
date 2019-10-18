@@ -546,12 +546,17 @@ HWC2::Error IAHWC2::HwcDisplay::GetClientTargetSupport(uint32_t width,
 HWC2::Error IAHWC2::HwcDisplay::GetColorModes(uint32_t *num_modes,
                                               int32_t *modes) {
   supported(__func__);
-  if (!modes)
-    *num_modes = 1;
+  if (!modes) {
+    display_->GetColorModes(num_modes, NULL);
+  }
 
-  if (modes)
-    *modes = HAL_COLOR_MODE_NATIVE;
-
+  if (modes) {
+    if (display_->GetColorModes(num_modes, modes)) {
+      return HWC2::Error::None;
+    } else {
+      return HWC2::Error::Unsupported;
+    }
+  }
   return HWC2::Error::None;
 }
 
@@ -878,7 +883,15 @@ HWC2::Error IAHWC2::HwcDisplay::SetColorMode(int32_t mode) {
   // TODO: Use the parameter mode to set the color mode for the display to be
   // used.
 
-  return HWC2::Error::None;
+   if (mode < HAL_COLOR_MODE_NATIVE || mode > HAL_COLOR_MODE_DISPLAY_P3)
+     return HWC2::Error::BadParameter;
+
+   if (display_->SetColorMode(mode)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::Unsupported;
+  }
+
 }
 
 HWC2::Error IAHWC2::HwcDisplay::SetColorModeWithRenderIntent(int32_t mode,

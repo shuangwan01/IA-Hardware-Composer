@@ -530,6 +530,14 @@ bool VirtualDisplay::GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
   return true;
 }
 
+bool VirtualDisplay::SetColorMode(int32_t mode) {
+  return true;
+}
+
+bool VirtualDisplay::GetColorModes(uint32_t *num_modes, int32_t *modes) {
+  return true;
+}
+
 int VirtualDisplay::GetDisplayPipe() {
   return -1;
 }
