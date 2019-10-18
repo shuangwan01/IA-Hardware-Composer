@@ -96,6 +96,10 @@ class NativeDisplay {
   virtual void GetDisplayCapabilities(uint32_t *outNumCapabilities,
                                       uint32_t *outCapabilities) = 0;
 
+  virtual bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                                  float *outMaxLuminance,
+                                  float *outMaxAverageLuminance,
+                                  float *outMinLuminance) = 0;
   /**
    * API for getting connected display's pipe id.
    * @return "-1" for unconnected display, valid values are 0 ~ 2.

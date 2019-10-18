@@ -633,6 +633,13 @@ void MosaicDisplay::GetDisplayCapabilities(uint32_t *numCapabilities,
   }
 }
 
+bool MosaicDisplay::GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                                       float *outMaxLuminance,
+                                       float *outMaxAverageLuminance,
+                                       float *outMinLuminance) {
+  return true;
+}
+
 void MosaicDisplay::SetHDCPState(HWCContentProtection state,
                                  HWCContentType content_type) {
   uint32_t size = physical_displays_.size();

@@ -111,6 +111,10 @@ class LogicalDisplay : public NativeDisplay {
   void GetDisplayCapabilities(uint32_t *numCapabilities,
                               uint32_t *capabilities) override;
 
+  bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                          float *outMaxLuminance, float *outMaxAverageLuminance,
+                          float *outMinLuminance) override;
+
   uint32_t GetXTranslation() override {
     return (((physical_display_->Width()) / total_divisions_) * index_);
   }

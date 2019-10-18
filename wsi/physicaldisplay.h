@@ -129,6 +129,10 @@ class PhysicalDisplay : public NativeDisplay, public DisplayPlaneHandler {
   void GetDisplayCapabilities(uint32_t *outNumCapabilities,
                               uint32_t *outCapabilities) override;
 
+  bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                          float *outMaxLuminance, float *outMaxAverageLuminance,
+                          float *outMinLuminance) = 0;
+
   bool EnableDRMCommit(bool enable) override;
 
   /**

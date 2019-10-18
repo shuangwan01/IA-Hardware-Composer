@@ -34,6 +34,7 @@
 #include "displayplanemanager.h"
 #include "displayqueue.h"
 #include "drmdisplaymanager.h"
+#include "hdr_metadata_defs.h"
 #include "wsi_utils.h"
 
 #define CTA_EXTENSION_TAG 0x02
@@ -647,6 +648,63 @@ void DrmDisplay::GetDisplayCapabilities(uint32_t *numCapabilities,
           HWCDisplayCapability::kDisplayCapabilitySkipClientColorTransform);
     }
   }
+}
+
+bool DrmDisplay::GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                                    float *outMaxLuminance,
+                                    float *outMaxAverageLuminance,
+                                    float *outMinLuminance) {
+  if (NULL == outNumTypes) {
+    ALOGE("outNumTypes couldn't be NULL!");
+    return false;
+  }
+
+  if (NULL == outTypes) {
+    ALOGE("outTypes couldn't be NULL!");
+    return false;
+  }
+
+  if (NULL == outMaxLuminance) {
+    ALOGE("outMaxLuminance couldn't be NULL!");
+    return false;
+  }
+
+  if (NULL == outMaxAverageLuminance) {
+    ALOGE("outMaxAverageLuminance couldn't be NULL!");
+    return false;
+  }
+
+  if (NULL == outMinLuminance) {
+    ALOGE("outMinLuminance couldn't be NULL!");
+    return false;
+  }
+
+  if (display_hdrMd) {
+    // HDR meta block bit 3 of byte 3: STPTE ST 2084
+    if (display_hdrMd->eotf & 0x04) {
+      *(outTypes + *outNumTypes) = (uint32_t)EOTF_ST2084;
+      *outNumTypes++;
+    }
+    // HDR meta block bit 4 of byte 3: HLG
+    if (display_hdrMd->eotf & 0x08) {
+      *(outTypes + *outNumTypes) = (uint32_t)EOTF_HLG;
+      *outNumTypes++;
+    }
+    double outmaxluminance, outmaxaverageluminance, outminluminance;
+    // Luminance value = 50 * POW(2, coded value / 32)
+    // Desired Content Min Luminance = Desired Content Max Luminance * POW(2,
+    // coded value/255) / 100
+    outmaxluminance = pow(2.0, display_hdrMd->desired_max_ll / 32.0) * 50.0;
+    *outMaxLuminance = float(outmaxluminance);
+    outmaxaverageluminance =
+        pow(2.0, display_hdrMd->desired_max_fall / 32.0) * 50.0;
+    *outMaxAverageLuminance = float(outmaxaverageluminance);
+    outminluminance = display_hdrMd->desired_max_ll *
+                      pow(2.0, display_hdrMd->desired_min_ll / 255.0) / 100;
+    *outMinLuminance = float(outminluminance);
+  }
+
+  return true;
 }
 
 void DrmDisplay::UpdateDisplayConfig() {

@@ -512,6 +512,14 @@ void VirtualDisplay::GetDisplayCapabilities(uint32_t *numCapabilities,
                                             uint32_t *capabilities) {
 }
 
+bool VirtualDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
+                                        int32_t *outTypes,
+                                        float *outMaxLuminance,
+                                        float *outMaxAverageLuminance,
+                                        float *outMinLuminance) {
+  return true;
+}
+
 int VirtualDisplay::GetDisplayPipe() {
   return -1;
 }

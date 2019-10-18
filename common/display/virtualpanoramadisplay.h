@@ -86,6 +86,10 @@ class VirtualPanoramaDisplay : public NativeDisplay {
   bool GetDisplayName(uint32_t *size, char *name) override;
   int GetDisplayPipe() override;
 
+  bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                          float *outMaxLuminance, float *outMaxAverageLuminance,
+                          float *outMinLuminance) override;
+
   bool SetPowerMode(uint32_t power_mode) override;
 
 #ifdef HYPER_DMABUF_SHARING

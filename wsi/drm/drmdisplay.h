@@ -144,6 +144,10 @@ class DrmDisplay : public PhysicalDisplay {
   void GetDisplayCapabilities(uint32_t *numCapabilities,
                               uint32_t *capabilities) override;
 
+  bool GetHdrCapabilities(uint32_t *outNumTypes, int32_t *outTypes,
+                          float *outMaxLuminance, float *outMaxAverageLuminance,
+                          float *outMinLuminance) override;
+
   bool GetDisplayIdentificationData(uint8_t *outPort, uint32_t *outDataSize,
                                     uint8_t *outData) override;
 

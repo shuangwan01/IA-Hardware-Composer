@@ -632,12 +632,20 @@ HWC2::Error IAHWC2::HwcDisplay::GetDozeSupport(int32_t *support) {
   return HWC2::Error::None;
 }
 
-HWC2::Error IAHWC2::HwcDisplay::GetHdrCapabilities(
-    uint32_t *num_types, int32_t * /*types*/, float * /*max_luminance*/,
-    float * /*max_average_luminance*/, float * /*min_luminance*/) {
+HWC2::Error IAHWC2::HwcDisplay::GetHdrCapabilities(uint32_t *num_types,
+                                                   int32_t *types,
+                                                   float *max_luminance,
+                                                   float *max_average_luminance,
+                                                   float *min_luminance) {
   supported(__func__);
   *num_types = 0;
-  return HWC2::Error::None;
+
+  if (display_->GetHdrCapabilities(num_types, types, max_luminance,
+                                   max_average_luminance, min_luminance)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::Unsupported;
+  }
 }
 
 HWC2::Error IAHWC2::HwcDisplay::GetReleaseFences(uint32_t *num_elements,
