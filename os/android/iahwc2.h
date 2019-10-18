@@ -233,6 +233,10 @@ class IAHWC2 : public hwc2_device_t {
                                    float *max_average_luminance,
                                    float *min_luminance);
     HWC2::Error GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys);
+
+    HWC2::Error GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                                 int32_t *outIntents);
+
     HWC2::Error GetReleaseFences(uint32_t *num_elements, hwc2_layer_t *layers,
                                  int32_t *fences);
     HWC2::Error PresentDisplay(int32_t *retire_fence);

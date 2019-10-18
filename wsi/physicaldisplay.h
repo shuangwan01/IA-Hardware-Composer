@@ -135,6 +135,9 @@ class PhysicalDisplay : public NativeDisplay, public DisplayPlaneHandler {
 
   bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) = 0;
 
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) = 0;
+
   bool EnableDRMCommit(bool enable) override;
 
   /**

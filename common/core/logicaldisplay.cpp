@@ -257,6 +257,11 @@ bool LogicalDisplay::GetHdrCapabilities(uint32_t *outNumTypes,
   return true;
 }
 
+bool LogicalDisplay::GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                                      int32_t *outIntents) {
+  return true;
+}
+
 bool LogicalDisplay::GetPerFrameMetadataKeys(uint32_t *outNumKeys,
                                              int32_t *outKeys) {
   return true;

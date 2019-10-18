@@ -117,6 +117,9 @@ class LogicalDisplay : public NativeDisplay {
 
   bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
 
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) override;
+
   uint32_t GetXTranslation() override {
     return (((physical_display_->Width()) / total_divisions_) * index_);
   }

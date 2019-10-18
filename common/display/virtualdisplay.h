@@ -88,6 +88,9 @@ class VirtualDisplay : public NativeDisplay {
                           float *outMinLuminance) override;
   bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
 
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) override;
+
   int GetDisplayPipe() override;
 
   bool SetPowerMode(uint32_t power_mode) override;

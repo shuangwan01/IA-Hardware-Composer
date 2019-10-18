@@ -152,6 +152,8 @@ class DrmDisplay : public PhysicalDisplay {
 
   bool GetDisplayIdentificationData(uint8_t *outPort, uint32_t *outDataSize,
                                     uint8_t *outData) override;
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) override;
 
   bool SetBroadcastRGB(const char *range_property) override;
 

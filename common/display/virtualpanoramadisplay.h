@@ -90,6 +90,10 @@ class VirtualPanoramaDisplay : public NativeDisplay {
                           float *outMaxLuminance, float *outMaxAverageLuminance,
                           float *outMinLuminance) override;
   bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
+
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) override;
+
   bool SetPowerMode(uint32_t power_mode) override;
 
 #ifdef HYPER_DMABUF_SHARING

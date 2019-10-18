@@ -112,6 +112,9 @@ class MosaicDisplay : public NativeDisplay {
                           float *outMinLuminance) override;
   bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
 
+  bool GetRenderIntents(int32_t mode, uint32_t *outNumIntents,
+                        int32_t *outIntents) override;
+
   uint32_t GetXTranslation() override {
     return 0;
   }
