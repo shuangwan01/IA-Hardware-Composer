@@ -161,6 +161,11 @@ struct HwcLayer {
     return true;
   }
 
+  bool SetLayerColorTransform(const float *matrix) {
+    memcpy(layer_color_transform_, matrix, sizeof(layer_color_transform_));
+    return true;
+  }
+
   const HwcRect<int>& GetDisplayFrame() const {
     return display_frame_;
   }
@@ -412,6 +417,7 @@ struct HwcLayer {
   };
 
   int32_t transform_ = 0;
+  float layer_color_transform_[16];
   uint32_t source_crop_width_ = 0;
   uint32_t source_crop_height_ = 0;
   uint32_t display_frame_width_ = 0;
