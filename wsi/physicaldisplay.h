@@ -133,6 +133,8 @@ class PhysicalDisplay : public NativeDisplay, public DisplayPlaneHandler {
                           float *outMaxLuminance, float *outMaxAverageLuminance,
                           float *outMinLuminance) = 0;
 
+  bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) = 0;
+
   bool EnableDRMCommit(bool enable) override;
 
   /**

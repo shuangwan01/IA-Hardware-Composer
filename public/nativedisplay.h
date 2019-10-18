@@ -100,6 +100,9 @@ class NativeDisplay {
                                   float *outMaxLuminance,
                                   float *outMaxAverageLuminance,
                                   float *outMinLuminance) = 0;
+
+  virtual bool GetPerFrameMetadataKeys(uint32_t *outNumKeys,
+                                       int32_t *outKeys) = 0;
   /**
    * API for getting connected display's pipe id.
    * @return "-1" for unconnected display, valid values are 0 ~ 2.

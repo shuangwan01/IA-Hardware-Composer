@@ -148,6 +148,8 @@ class DrmDisplay : public PhysicalDisplay {
                           float *outMaxLuminance, float *outMaxAverageLuminance,
                           float *outMinLuminance) override;
 
+  bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
+
   bool GetDisplayIdentificationData(uint8_t *outPort, uint32_t *outDataSize,
                                     uint8_t *outData) override;
 

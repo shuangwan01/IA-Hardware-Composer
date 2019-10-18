@@ -115,6 +115,8 @@ class LogicalDisplay : public NativeDisplay {
                           float *outMaxLuminance, float *outMaxAverageLuminance,
                           float *outMinLuminance) override;
 
+  bool GetPerFrameMetadataKeys(uint32_t *outNumKeys, int32_t *outKeys) override;
+
   uint32_t GetXTranslation() override {
     return (((physical_display_->Width()) / total_divisions_) * index_);
   }
