@@ -1313,6 +1313,16 @@ HWC2::Error IAHWC2::Hwc2Layer::SetLayerPerFrameMetadataBlobs(
   return HWC2::Error::None;
 }
 
+HWC2::Error IAHWC2::Hwc2Layer::SetLayerPerFrameMetadata(uint32_t numElements,
+                                                        const int32_t *keys,
+                                                        const float *metadata) {
+  if (hwc_layer_.SetLayerPerFrameMetadata(numElements, keys, metadata)) {
+    return HWC2::Error::None;
+  } else {
+    return HWC2::Error::BadParameter;
+  }
+}
+
 // static
 int IAHWC2::HookDevClose(hw_device_t * /*dev*/) {
   unsupported(__func__);
@@ -1561,6 +1571,11 @@ hwc2_function_pointer_t IAHWC2::HookDevGetFunction(struct hwc2_device * /*dev*/,
           LayerHook<decltype(&Hwc2Layer::SetLayerPerFrameMetadataBlobs),
                     &Hwc2Layer::SetLayerPerFrameMetadataBlobs, uint32_t,
                     const int32_t *, const uint32_t *, const uint8_t *>);
+    case HWC2::FunctionDescriptor::SetLayerPerFrameMetadata:
+      return ToHook<HWC2_PFN_SET_LAYER_PER_FRAME_METADATA>(
+          LayerHook<decltype(&Hwc2Layer::SetLayerPerFrameMetadata),
+                    &Hwc2Layer::SetLayerPerFrameMetadata, uint32_t,
+                    const int32_t *, const float *>);
     case HWC2::FunctionDescriptor::Invalid:
     default:
       return NULL;

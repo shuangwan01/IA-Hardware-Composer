@@ -105,6 +105,62 @@ struct HwcLayer {
     return dataspace_;
   }
 
+  bool SetLayerPerFrameMetadata(uint32_t numElements, const int32_t* keys,
+                                const float* metadata) {
+    if (0 == numElements || NULL == keys || NULL == metadata) {
+      ALOGE("Bad parameters!");
+      return false;
+    }
+
+    for (uint32_t i = 0; i < numElements; i++) {
+      int32_t key = *(keys + i);
+      float keyvalue = *(metadata + i);
+      switch (key) {
+        case KEY_DISPLAY_RED_PRIMARY_X:
+          STATIC_METADATA(primaries.r.x) = keyvalue;
+          break;
+        case KEY_DISPLAY_RED_PRIMARY_Y:
+          STATIC_METADATA(primaries.r.y) = keyvalue;
+          break;
+        case KEY_DISPLAY_GREEN_PRIMARY_X:
+          STATIC_METADATA(primaries.g.x) = keyvalue;
+          break;
+        case KEY_DISPLAY_GREEN_PRIMARY_Y:
+          STATIC_METADATA(primaries.g.y) = keyvalue;
+          break;
+        case KEY_DISPLAY_BLUE_PRIMARY_X:
+          STATIC_METADATA(primaries.b.x) = keyvalue;
+          break;
+        case KEY_DISPLAY_BLUE_PRIMARY_Y:
+          STATIC_METADATA(primaries.b.y) = keyvalue;
+          break;
+        case KEY_WHITE_POINT_X:
+          STATIC_METADATA(primaries.white_point.x) = keyvalue;
+          break;
+        case KEY_WHITE_POINT_Y:
+          STATIC_METADATA(primaries.white_point.y) = keyvalue;
+          break;
+        case KEY_MAX_LUMINANCE:
+          STATIC_METADATA(max_luminance) = keyvalue;
+          break;
+        case KEY_MIN_LUMINANCE:
+          STATIC_METADATA(min_luminance) = keyvalue;
+          break;
+        case KEY_MAX_CONTENT_LIGHT_LEVEL:
+          STATIC_METADATA(max_cll) = keyvalue;
+          break;
+        case KEY_MAX_FRAME_AVERAGE_LIGHT_LEVEL:
+          STATIC_METADATA(max_fall) = keyvalue;
+          break;
+        default:
+          ALOGE("Unkonwn HDR metda key: %u, value: %f", key, keyvalue);
+          break;
+      }
+    }
+
+    return true;
+  }
+
   const HwcRect<int>& GetDisplayFrame() const {
     return display_frame_;
   }

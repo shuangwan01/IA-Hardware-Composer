@@ -151,6 +151,10 @@ class IAHWC2 : public hwc2_device_t {
                                               const uint32_t *sizes,
                                               const uint8_t *metadata);
 
+    HWC2::Error SetLayerPerFrameMetadata(uint32_t numElements,
+                                         const int32_t *keys,
+                                         const float *metadata);
+
    private:
     // sf_type_ stores the initial type given to us by surfaceflinger,
     // validated_type_ stores the type after running ValidateDisplay
